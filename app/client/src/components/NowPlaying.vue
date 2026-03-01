@@ -13,12 +13,12 @@
         <button v-if="!playing" @click="togglePause()" class="fa fa-play btn btn-ghost text-xs"></button>
         <button @click="this.$store.commit('set_track', null)" class="fa fa-stop btn btn-ghost"></button>
 
-        <div class="px-5">
+        <div v-show="video" class="px-5">
             <span class="font-bold">{{ track.name }}</span> <br>
             <span>{{ track.artist }}</span>
         </div>
-        <button v-if="video" @click="video = false" class="fa fa-caret-down btn btn-ghost text-2xl"></button>
-        <button v-if="!video" @click="video = true" class="fa fa-caret-up btn btn-ghost text-2xl"></button>
+        <button v-show="video" @click="video = false" class="fa fa-caret-down btn btn-ghost text-2xl"></button>
+        <button v-show="!video" @click="video = true" class="fa fa-caret-up btn btn-ghost text-2xl"></button>
     </div>
 </div>
 </template>

@@ -4,6 +4,7 @@ from flask_cors import CORS, cross_origin
 import yaml
 import json
 import requests
+import sqlite3
 
 app = Flask(__name__)
 CORS(app)
@@ -11,6 +12,14 @@ api = Api(app)
 
 config = yaml.safe_load(open('config.yml'))
 youtube_api_key = config['youtube_api_key']
+
+@app.route('/tracks')
+def get_tracks():
+    cur = sqlite3.connect("songs.db").cursor()
+    query = cur.execute("SELECT artist, name, year FROM songs")
+
+    res = [{'artist': t[0], 'name': t[1], 'year': t[2]} for t in query.fetchall()]
+    return res
 
 @app.route('/search_video')
 def search_video():
