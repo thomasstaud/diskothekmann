@@ -15,7 +15,7 @@
 
         <div v-show="video" class="px-5">
             <span class="font-bold">{{ track.name }}</span> <br>
-            <span>{{ track.artist }}</span>
+            <span>{{ track.artist }} - {{ track.year }}</span>
         </div>
         <button v-show="video" @click="video = false" class="fa fa-caret-down btn btn-ghost text-2xl"></button>
         <button v-show="!video" @click="video = true" class="fa fa-caret-up btn btn-ghost text-2xl"></button>
