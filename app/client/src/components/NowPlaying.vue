@@ -11,6 +11,8 @@
     <div class="flex justify-end">
         <button v-if="playing" @click="togglePause()" class="fa fa-pause btn btn-ghost text-xs"></button>
         <button v-if="!playing" @click="togglePause()" class="fa fa-play btn btn-ghost text-xs"></button>
+        <button @click="skipAhead()" class="fa fa-forward btn btn-ghost text-xs"></button>
+
         <button @click="this.$store.commit('set_track', null)" class="fa fa-stop btn btn-ghost"></button>
 
         <div v-show="video" class="px-5">
@@ -39,6 +41,8 @@ export default {
     },
     methods: {
         async play_track() {
+            this.playing = true;
+            this.video = false
             let id = await api.get_video_id(this.track);
             console.log(id);
             this.url = `https://www.youtube.com/watch?v=${id}`;
@@ -58,6 +62,10 @@ export default {
                 this.$refs.youtube.playVideo()
             }
             this.playing = !this.playing;
+        },
+        skipAhead() {
+            let time = this.$refs.youtube.getCurrentTime()
+            this.$refs.youtube.seekTo(time + 15);
         }
     },
     components: { YouTube },
