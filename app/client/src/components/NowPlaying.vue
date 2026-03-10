@@ -34,6 +34,7 @@ export default {
         return {
             url: null,
             track: null,
+            playlist: null,
             video: false,
             playing: null,
             loading: true
@@ -42,16 +43,23 @@ export default {
     methods: {
         async play_track() {
             this.playing = true;
-            this.video = false
+            this.video = false;
             let id = await api.get_video_id(this.track);
             console.log(id);
             this.url = `https://www.youtube.com/watch?v=${id}`;
             console.log(this.url);
         },
+        play_playlist() {
+            this.playing = true;
+        },
         onReady() {
+            console.log("hans!");
             this.loading = false;
             this.playing = true;
-            this.$refs.youtube.playVideo()
+            // this.$refs.youtube.playVideo();
+            
+            this.$refs.youtube.loadPlaylist(this.playlist);
+            this.$refs.youtube.setShuffle(true);
         },
         togglePause() {
             if (this.loading) return;
@@ -70,10 +78,16 @@ export default {
     },
     components: { YouTube },
     watch: {
-       '$store.state.playingTrack': function() {
-            this.track = this.$store.state.playingTrack
+       '$store.state.currentTrack': function() {
+            this.track = this.$store.state.currentTrack
+            if (!this.track) return;
             this.play_track()
-        }
+        },
+       '$store.state.currentPlaylist': function() {
+            this.playlist = this.$store.state.currentPlaylist
+            if (!this.playlist) return;
+            this.play_playlist()
+        },
     }
 }
 </script>
