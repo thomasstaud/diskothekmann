@@ -5,6 +5,8 @@ import yaml
 import json
 import requests
 import sqlite3
+import time
+import re
 
 app = Flask(__name__)
 CORS(app)
@@ -12,6 +14,10 @@ api = Api(app)
 
 config = yaml.safe_load(open('config.yml'))
 youtube_api_key = config['youtube_api_key']
+music_brainz_user_agent = "diskothekmann/0.0 ( thomas.staud05@gmail.com )"
+
+# used to avoid calling music brainz api more than once per second
+last_api_call = 0
 
 @app.route('/tracks')
 def get_tracks():
@@ -42,6 +48,15 @@ this is done in two steps
 '''
 @app.route('/track_from_id')
 def track_from_id():
+    # throttle
+    global last_api_call
+    current_time = int(time.time())
+    if last_api_call == current_time:
+        print("throttled query (track_from_id)")
+        return {'error': 'hey, stop spamming queries!'}
+    last_api_call = current_time
+    print(last_api_call)
+
     id = request.args.get('id')
 
     # 1. get video title
@@ -51,8 +66,33 @@ def track_from_id():
     print(data)
 
     # 2. extract title
+    title = data["items"][0]["snippet"]["title"]
+    # TODO: remove extras like '(20xx Remaster)' or 'Live at xxx'
+    # in most cases filtering out artist name should be possible as well - but that's NOT the case for release year!!
+    artist = data["items"][0]["snippet"]["channelTitle"][:-8]
 
     # 3. find track info
+    print("Title:", title)
+    print("Artist:", artist)
+    sanitized_title = title.replace("&", "and")
+    sanitized_artist = artist.replace("&", "and")
+    url = f"http://musicbrainz.org/ws/2/recording/?query=recording:{sanitized_title}%20AND%20artist:{sanitized_artist}&fmt=json"
+    headers = {'User-Agent': music_brainz_user_agent}
+    response = requests.get(url, headers=headers)
+    data = json.loads(response.text)
+    # print(data)
+    releases = data["recordings"][0]["releases"]
+    year = -1
+    # TODO: don't just pick the first release in the list.
+    #   maybe find the minimum date?
+    #   maybe filter out bad properties (live, re-recording)
+    for release in releases:
+        if "release-events" in release:
+            date = release["release-events"][0]["date"]
+            year = int(re.match("^\d{4}", date).group(0))
+            break
+
+    return {'artist': artist, 'title': title, 'year': year}
 
 
 if __name__ == '__main__':
