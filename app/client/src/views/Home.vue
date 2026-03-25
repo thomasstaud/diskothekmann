@@ -28,11 +28,15 @@ export default {
         this.$store.commit('set_track', this.track)
       },
       loadPlaylist() {
-        // remove leading url bits (up to the equals sign)
-        // notably, this doesn't break things if there are no leading url bits
-        let eqPos = this.playlistUrl.indexOf('=') + 1;
-        let playlistId = this.playlistUrl.substring(eqPos);
-        this.$store.commit('set_playlist', playlistId)
+        // the url should have this shape:
+        // [youtube blabla]?v=[video id]&list=[playlist id]&[blabla]
+        // we need to extract video and playlist id from that
+        // for this, we use regex (because we are cool)
+        const re = /.*\?v=(.*)&list=(.*)&.*/
+        const data = re.exec(this.playlistUrl);
+        console.log(data[1], data[2]);
+        this.$store.commit('set_track', data[1])
+        this.$store.commit('set_playlist', data[2])
       }
     }
 }

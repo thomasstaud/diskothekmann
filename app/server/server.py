@@ -33,6 +33,27 @@ def search_video():
     print(id)
     return id
 
+'''
+takes a youtube video id and returns a track (with artist, name and year)
+this is done in two steps
+1. retrieve video title from youtube API
+2. try to extract song title
+3. find corresponding song via MusicBrainz API (alternatively last.fm?)
+'''
+@app.route('/track_from_id')
+def track_from_id():
+    id = request.args.get('id')
+
+    # 1. get video title
+    url = f"https://www.googleapis.com/youtube/v3/videos?key={youtube_api_key}&part=snippet&id={id}"
+    response = requests.get(url)
+    data = json.loads(response.text)
+    print(data)
+
+    # 2. extract title
+
+    # 3. find track info
+
 
 if __name__ == '__main__':
     app.run(debug=True)

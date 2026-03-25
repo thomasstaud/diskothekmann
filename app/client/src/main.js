@@ -27,11 +27,9 @@ const store = createStore({
     },
     mutations: {
       set_track (state, track) {
-        state.currentPlaylist = null;
         state.currentTrack = track;
       },
       set_playlist (state, playlist) {
-        state.currentTrack = null;
         state.currentPlaylist = playlist;
       }
     }

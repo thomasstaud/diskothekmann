@@ -1,10 +1,11 @@
 <template>
-<div v-if="track != null" class="fixed card card-bordered p-5 bg-base-content text-base-100 shadow-xl w-2000 right-10 bottom-10">
+<div v-if="track != null || playlist != null" class="fixed card card-bordered p-5 bg-base-content text-base-100 shadow-xl w-2000 right-10 bottom-10">
     <YouTube 
         v-if="url != null"
         v-show="video"
         class="mb-5 rounded-lg"
         :src="url"
+        :vars="vars"
         @ready="onReady()"
         ref="youtube"/>
 
@@ -12,10 +13,11 @@
         <button v-if="playing" @click="togglePause()" class="fa fa-pause btn btn-ghost text-xs"></button>
         <button v-if="!playing" @click="togglePause()" class="fa fa-play btn btn-ghost text-xs"></button>
         <button @click="skipAhead()" class="fa fa-forward btn btn-ghost text-xs"></button>
+        <button @click="next()" class="fa fa-forward btn btn-ghost text-xs"></button>
 
         <button @click="this.$store.commit('set_track', null)" class="fa fa-stop btn btn-ghost"></button>
 
-        <div v-show="video" class="px-5">
+        <div v-show="video" v-if="false" class="px-5">
             <span class="font-bold">{{ track.name }}</span> <br>
             <span>{{ track.artist }} - {{ track.year }}</span>
         </div>
@@ -44,20 +46,25 @@ export default {
         async play_track() {
             this.playing = true;
             this.video = false;
-            let id = await api.get_video_id(this.track);
+            // let id = await api.get_video_id(this.track);
+            let id = this.track
             console.log(id);
             this.url = `https://www.youtube.com/watch?v=${id}`;
             console.log(this.url);
         },
         play_playlist() {
-            this.playing = true;
+            this.vars = {
+                listType: 'playlist',
+                list: this.playlist,
+            }
+            console.log("loading playlist...");
+            console.log(this.playlist);
         },
         onReady() {
             console.log("hans!");
             this.loading = false;
             this.playing = true;
-            // this.$refs.youtube.playVideo();
-            
+
             this.$refs.youtube.loadPlaylist(this.playlist);
             this.$refs.youtube.setShuffle(true);
         },
@@ -74,6 +81,10 @@ export default {
         skipAhead() {
             let time = this.$refs.youtube.getCurrentTime()
             this.$refs.youtube.seekTo(time + 15);
+        },
+        next() {
+            this.$refs.youtube.setShuffle(true);
+            this.$refs.youtube.nextVideo();
         }
     },
     components: { YouTube },
