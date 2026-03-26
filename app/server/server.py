@@ -92,7 +92,7 @@ def track_from_id():
             year = int(re.match("^\d{4}", date).group(0))
             break
 
-    return {'artist': artist, 'title': title, 'year': year}
+    return {'artist': artist, 'name': title, 'year': year}
 
 
 if __name__ == '__main__':

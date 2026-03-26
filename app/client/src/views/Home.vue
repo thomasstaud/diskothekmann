@@ -32,7 +32,7 @@ export default {
         // [youtube blabla]?v=[video id]&list=[playlist id]&[blabla]
         // we need to extract video and playlist id from that
         // for this, we use regex (because we are cool)
-        const re = /.*\?v=(.*)&list=(.*)&.*/
+        const re = /.*\?v=(.*)&list=(.*)(?:&.*)?/
         const data = re.exec(this.playlistUrl);
         console.log(data[1], data[2]);
         this.$store.commit('set_track', data[1])

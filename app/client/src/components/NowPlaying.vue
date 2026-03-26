@@ -13,11 +13,11 @@
         <button v-if="playing" @click="togglePause()" class="fa fa-pause btn btn-ghost text-xs"></button>
         <button v-if="!playing" @click="togglePause()" class="fa fa-play btn btn-ghost text-xs"></button>
         <button @click="skipAhead()" class="fa fa-forward btn btn-ghost text-xs"></button>
-        <button @click="next()" class="fa fa-forward btn btn-ghost text-xs"></button>
+        <button @click="next()" class="fa fa-arrow-right btn btn-ghost text-xs"></button>
 
         <button @click="this.$store.commit('set_track', null)" class="fa fa-stop btn btn-ghost"></button>
 
-        <div v-show="video" v-if="false" class="px-5">
+        <div v-show="video" class="px-5">
             <span class="font-bold">{{ track.name }}</span> <br>
             <span>{{ track.artist }} - {{ track.year }}</span>
         </div>
@@ -48,6 +48,7 @@ export default {
             this.video = false;
             // let id = await api.get_video_id(this.track);
             let id = this.track
+            this.track = await api.get_track_from_id(id);
             console.log(id);
             this.url = `https://www.youtube.com/watch?v=${id}`;
             console.log(this.url);
@@ -85,6 +86,7 @@ export default {
         next() {
             this.$refs.youtube.setShuffle(true);
             this.$refs.youtube.nextVideo();
+            console.log(this.url);
         }
     },
     components: { YouTube },
