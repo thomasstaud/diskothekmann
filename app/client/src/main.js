@@ -21,16 +21,18 @@ const router = createRouter({
 const store = createStore({
     state () {
       return {
-        currentTrack: null,
-        currentPlaylist: null,
+        track: null,
+        track_id: null,
+        playlist: null,
       }
     },
     mutations: {
       set_track (state, track) {
-        state.currentTrack = track;
+        state.track = track;
       },
-      set_playlist (state, playlist) {
-        state.currentPlaylist = playlist;
+      set_playlist (state, payload) {
+        state.track_id = payload.track_id;
+        state.playlist = payload.playlist;
       }
     }
   })

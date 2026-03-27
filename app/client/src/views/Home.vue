@@ -34,9 +34,12 @@ export default {
         // for this, we use regex (because we are cool)
         const re = /.*\?v=(.*)&list=(.*)(?:&.*)?/
         const data = re.exec(this.playlistUrl);
-        console.log(data[1], data[2]);
-        this.$store.commit('set_track', data[1])
-        this.$store.commit('set_playlist', data[2])
+        const payload = {
+            'track_id': data[1],
+            'playlist': data[2],
+        }
+        console.log(payload);
+        this.$store.commit('set_playlist', payload)
       }
     }
 }

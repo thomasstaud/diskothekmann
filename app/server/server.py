@@ -72,8 +72,6 @@ def track_from_id():
     artist = data["items"][0]["snippet"]["channelTitle"][:-8]
 
     # 3. find track info
-    print("Title:", title)
-    print("Artist:", artist)
     sanitized_title = title.replace("&", "and")
     sanitized_artist = artist.replace("&", "and")
     url = f"http://musicbrainz.org/ws/2/recording/?query=recording:{sanitized_title}%20AND%20artist:{sanitized_artist}&fmt=json"
@@ -82,7 +80,7 @@ def track_from_id():
     data = json.loads(response.text)
     # print(data)
     releases = data["recordings"][0]["releases"]
-    year = -1
+    year = '?'
     # TODO: don't just pick the first release in the list.
     #   maybe find the minimum date?
     #   maybe filter out bad properties (live, re-recording)
@@ -91,8 +89,10 @@ def track_from_id():
             date = release["release-events"][0]["date"]
             year = int(re.match("^\d{4}", date).group(0))
             break
-
-    return {'artist': artist, 'name': title, 'year': year}
+    
+    payload = {'artist': artist, 'name': title, 'year': year}
+    print(payload)
+    return payload
 
 
 if __name__ == '__main__':
